@@ -3,7 +3,7 @@ from sqlalchemy.orm import declarative_base
 from sqlalchemy_utils import ChoiceType
 
 # Create an SQLite database 
-db = create_engine('sqlite:///example.db', echo=True)
+db = create_engine('sqlite:///pizza_delivery_fastapi.db', echo=True)
 
 # Create a base class for models
 Base = declarative_base()
