@@ -1,6 +1,6 @@
 from sqlalchemy import Boolean, Column, Float, ForeignKey, Integer, String, create_engine
 from sqlalchemy.orm import declarative_base
-from sqlalchemy_utils import ChoiceType
+from sqlalchemy_utils.types import ChoiceType
 
 # Create an SQLite database 
 db = create_engine('sqlite:///pizza_delivery_fastapi.db', echo=True)
@@ -30,18 +30,19 @@ class User(Base):
 class Order(Base):
     __tablename__ = 'orders'
 
-    STATUS_CHOICES = (
-        ('pending', 'PENDING'),
-        ('canceled', 'CANCELED'),
-        ('completed', 'COMPLETED'),
-        # Add more statuses as needed
-    )  # Define possible order statuses
+    # STATUS_CHOICES = (
+    #     ('pending', 'PENDING'),
+    #     ('canceled', 'CANCELED'),
+    #     ('completed', 'COMPLETED'),
+    #     # Add more statuses as needed
+    # )  # Define possible order statuses
     
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(ForeignKey('users.id'), nullable=False)  # Assuming a foreign key relationship with User
     product_id = Column(Integer, nullable=False)
     quantity = Column(Integer, nullable=False)
-    status = Column(ChoiceType(STATUS_CHOICES))  # Using ChoiceType for status
+    status = Column(String)  # Using ChoiceType for status
+    # status = Column(ChoiceType(STATUS_CHOICES))  # Using ChoiceType for status
     price = Column(Float, nullable=False)
     # items = Column(Integer, nullable=False)
 
