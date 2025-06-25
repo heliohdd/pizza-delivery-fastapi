@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from models import User
 from dependencies import get_db_session
 from main import bcrypt_context
@@ -15,10 +15,10 @@ async def create_account(username: str, email: str, password: str, session= Depe
     '''Endpoint to create a new user account'''
     user = session.query(User).filter(User.email == email).first()
     if user:
-        return {"message": "User already exists"}
+        raise HTTPException(status_code=400, detail="Email already registered")
     else:
         password_hashed = bcrypt_context.hash(password)
         new_user = User(username, email, password_hashed)  # Assuming User model has email and password fields
         session.add(new_user)
         session.commit()
-        return {"message": "User created successfully"}
+        return {"message": f"User {username} created successfully"}
