@@ -1,6 +1,15 @@
 from fastapi import FastAPI
+from passlib.context import CryptContext
+from dotenv import load_dotenv
+from os import getenv
+
+load_dotenv()  # Carrega as variáveis de ambiente do arquivo .env
+
+SECRET_KEY = getenv("SECRET_KEY")
 
 app = FastAPI()
+
+bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 from auth_routes import auth_router
 from order_routes import order_router
@@ -11,7 +20,7 @@ app.include_router(order_router)
 # para conferir a versão do python: python --version
 # 1- para rodar o nosso ódigo, executar no terminal: uvicorn main:app --reload
 # 2- para acessar a documentação da API em formato OpenAPI: http://127.0.0.1:8000/docs
-# instalar as dependencias pip install fastapi uvicorn sqlalchemy passlib[bcrypt] python-jose[cryptography] python-dotenv python-multipart
+# instalar as dependencias pip install fastapi uvicorn sqlalchemy passlib[bcrypt] python-jose[cryptography] python-dotenv python-multipart -> uvicorn(server), fastapi (framework), sqlalchemy (ORM), passlib (hashing de senhas), python-jose (JWT), python-dotenv (variaveis de ambiente), python-multipart (upload de arquivos)
 # install fastapi e uvicorn, executar no terminal: pip install fastapi uvicorn
 # para instalar o SQLAlchemy Utils, executar no terminal: pip install sqlalchemy-utils
 # 2- para instalar o Alembic, executar no terminal: pip install alembic

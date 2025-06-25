@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from models import User
 from dependencies import get_db_session
+from main import bcrypt_context
 
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -16,8 +17,8 @@ async def create_account(username: str, email: str, password: str, session= Depe
     if user:
         return {"message": "User already exists"}
     else:
-        new_user = User(username, email, password)  # Assuming User model has email and password fields
-        # new_user = User(username=username, email=email, password=password)  # Assuming User model has email and password fields
+        password_hashed = bcrypt_context.hash(password)
+        new_user = User(username, email, password_hashed)  # Assuming User model has email and password fields
         session.add(new_user)
         session.commit()
         return {"message": "User created successfully"}
