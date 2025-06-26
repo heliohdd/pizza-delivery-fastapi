@@ -38,20 +38,16 @@ class Order(Base):
     # )  # Define possible order statuses
     
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(ForeignKey('users.id'), nullable=False)  # Assuming a foreign key relationship with User
-    product_id = Column(Integer, nullable=False)
-    quantity = Column(Integer, nullable=False)
     status = Column(String)  # Using ChoiceType for status
-    # status = Column(ChoiceType(STATUS_CHOICES))  # Using ChoiceType for status
+    user_id = Column(ForeignKey('users.id'), nullable=False)  # Assuming a foreign key relationship with User
     price = Column(Float, nullable=False)
     # items = Column(Integer, nullable=False)
 
     # Constructor to initialize the order
-    def __init__(self, user_id, product_id, quantity, status='pending'):
+    def __init__(self, user_id, status='pending', price=0.0):
         self.user_id = user_id
-        self.product_id = product_id
-        self.quantity = quantity
         self.status = status
+        self.price = price
 
 class OrderItem(Base):
     __tablename__ = 'order_items'

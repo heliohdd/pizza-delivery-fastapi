@@ -18,7 +18,7 @@ app.include_router(auth_router)
 app.include_router(order_router)
 
 # para conferir a versão do python: python --version
-# 1- para rodar o nosso ódigo, executar no terminal: uvicorn main:app --reload
+# 1- para rodar o nosso código, executar no terminal: uvicorn main:app --reload
 # 2- para acessar a documentação da API em formato OpenAPI: http://127.0.0.1:8000/docs
 # instalar as dependencias pip install fastapi uvicorn sqlalchemy passlib[bcrypt] python-jose[cryptography] python-dotenv python-multipart -> uvicorn(server), fastapi (framework), sqlalchemy (ORM), passlib (hashing de senhas), python-jose (JWT), python-dotenv (variaveis de ambiente), python-multipart (upload de arquivos)
 # install fastapi e uvicorn, executar no terminal: pip install fastapi uvicorn
