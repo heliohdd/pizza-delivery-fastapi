@@ -12,6 +12,14 @@ def generate_jwt_token(user_id):
     token = f"ahuyba786dabd86a5vdba865dvad786and{user_id}" # Placeholder for the JWT token generation logic
     return token
 
+
+def authenticate_user(email: str, password: str, session: Session):
+    '''Function to authenticate a user with email and password'''
+    user = session.query(User).filter(User.email == email).first()
+    if not user or not bcrypt_context.verify(password, user.password):
+        return None
+    return user
+
 @auth_router.get("/")
 async def home():
     '''Endpoint for system standard authentication'''
@@ -34,7 +42,7 @@ async def create_account(user_schema: UserSchema, session: Session = Depends(get
 @auth_router.post("/login")
 async def login(login_schema: LoginSchema, session: Session = Depends(get_db_session)):
     '''Endpoint to login a user and return a JWT token'''
-    user = session.query(User).filter(User.email == login_schema.email).first()
+    user = authenticate_user(login_schema.email, login_schema.password, session)
     if not user or not bcrypt_context.verify(login_schema.password, user.password):
         raise HTTPException(status_code=401, detail="Invalid email or password")
     else:
