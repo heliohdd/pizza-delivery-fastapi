@@ -9,9 +9,9 @@ from datetime import datetime, timedelta, timezone
 
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
 
-def generate_jwt_token(user_id):
+def generate_jwt_token(user_id, token_duration=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)):
     '''Function to generate a JWT token for the user'''
-    data_expiration = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)  # Token expiration time in seconds (1 hour)
+    data_expiration = datetime.now(timezone.utc) + token_duration  # Token expiration time in seconds (1 hour)
     dic_info = {
         "sub": user_id,  # Subject of the token, typically the user ID
         "exp": data_expiration  # Expiration time of the token
@@ -44,7 +44,6 @@ async def create_account(user_schema: UserSchema, session: Session = Depends(get
         session.commit()
         return {"message": f"User {user_schema.username} created successfully"}
 
-# login -> email e senha -> token JWT (Json Web Token) ahuyba786dabd86a5vdba865dvad786and
 @auth_router.post("/login")
 async def login(login_schema: LoginSchema, session: Session = Depends(get_db_session)):
     '''Endpoint to login a user and return a JWT token'''
@@ -53,4 +52,10 @@ async def login(login_schema: LoginSchema, session: Session = Depends(get_db_ses
         raise HTTPException(status_code=401, detail="Invalid email or password")
     else:
         access_token = generate_jwt_token(user.id)
-        return {"access_token": access_token, "token_type": "bearer", "user_id": user.id}
+        refresh_token = generate_jwt_token(user.id, token_duration=timedelta(days=7))  # Refresh token valid for 7 days
+        # Here you can store the refresh token in the database if needed
+        return {
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+            "token_type": "bearer",
+            "user_id": user.id}
