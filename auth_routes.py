@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
 from models import User
 from dependencies import get_db_session, token_verify
 from main import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY, bcrypt_context
@@ -55,7 +56,20 @@ async def login(login_schema: LoginSchema, session: Session = Depends(get_db_ses
             "access_token": access_token,
             "refresh_token": refresh_token,
             "token_type": "Bearer",
-            "user_id": user.id}
+            }
+
+@auth_router.post("/login-form")
+async def login_form(form_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_db_session)):
+    '''Endpoint to login a user and return a JWT token'''
+    user = authenticate_user(form_data.username, form_data.password, session)
+    if not user or not bcrypt_context.verify(form_data.password, user.password):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    else:
+        access_token = generate_jwt_token(user.id)
+        return {
+            "access_token": access_token,
+            "token_type": "Bearer",
+            }
 
 @auth_router.get("/refresh_token")
 async def use_refresh_token(user: User = Depends(token_verify)):
