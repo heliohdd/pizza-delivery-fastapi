@@ -6,6 +6,8 @@ from os import getenv
 load_dotenv()  # Carrega as variáveis de ambiente do arquivo .env
 
 SECRET_KEY = getenv("SECRET_KEY")
+ALGORITHM = getenv("ALGORITHM")  # Default to HS256 if not set  
+ACCESS_TOKEN_EXPIRE_MINUTES = int(getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))  # Default to 30 minutes if not set
 
 app = FastAPI()
 
