@@ -44,7 +44,7 @@ class Order(Base):
     # items = Column(Integer, nullable=False)
 
     # Constructor to initialize the order
-    def __init__(self, user_id, status='pending', price=0.0):
+    def __init__(self, user_id, status='PENDING', price=0.0):
         self.user_id = user_id
         self.status = status
         self.price = price
