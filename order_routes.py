@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from dependencies import get_db_session, token_verify
-from models import Order
+from models import Order, User
 from schemas import OrderSchema
 
 order_router = APIRouter(prefix="/orders", tags=["orders"], dependencies=[Depends(token_verify)])
@@ -20,11 +20,22 @@ async def create_order(order_schema: OrderSchema, session: Session = Depends(get
     return {"message": "Order created successfully", "order id:": new_order.id}
 
 @order_router.post("/order/cancel/{order_id}")
-async def cancel_order(order_id: int, session: Session = Depends(get_db_session)):
+async def cancel_order(order_id: int, session: Session = Depends(get_db_session), user: User=Depends(token_verify)):
     '''Endpoint for canceling an order.'''
     order = session.query(Order).filter(Order.id == order_id).first()
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
+    if not user.admin and order.user_id != user.id:
+        raise HTTPException(status_code=403, detail="You do not have permission to cancel this order")
     order.status = "CANCELED"
     session.commit()
-    return {"message": "Order canceled successfully", "order id:": order_id}
+    return {"message": f"Order number: {order.id} canceled successfully", "order:": order}
+
+@order_router.get("/list")
+async def list_orders(session: Session = Depends(get_db_session), user: User = Depends(token_verify)):
+    '''Endpoint for listing all orders.'''
+    if not user.admin:
+        raise HTTPException(status_code=403, detail="You do not have permission to view all orders")
+    else:
+        orders = session.query(Order).all()
+        return {"orders": orders}
