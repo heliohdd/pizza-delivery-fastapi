@@ -1,5 +1,5 @@
 from sqlalchemy import Boolean, Column, Float, ForeignKey, Integer, String, create_engine
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy_utils.types import ChoiceType
 
 # Create an SQLite database 
@@ -41,7 +41,7 @@ class Order(Base):
     status = Column(String)  # Using ChoiceType for status
     user_id = Column(ForeignKey('users.id'), nullable=False)  # Assuming a foreign key relationship with User
     price = Column(Float, nullable=False)
-    # items = Column(Integer, nullable=False)
+    items = relationship('OrderItem', cascade="all, delete", backref='order', lazy=True)
 
     # Constructor to initialize the order
     def __init__(self, user_id, status='PENDING', price=0.0):
@@ -51,10 +51,7 @@ class Order(Base):
 
     def calculate_total_price(self):
         """Calculate the total price of the order based on its items."""
-        self.price = 10  # Placeholder for total price calculation logic
-        # Assuming items is a list of OrderItem objects, you can calculate the total price like this:
-        # self.price = sum(item.quantity * item.unity_price for item in items)
-        return self.price
+        self.price = sum(item.unity_price * item.quantity for item in self.items)
 
 class OrderItem(Base):
     __tablename__ = 'order_items'

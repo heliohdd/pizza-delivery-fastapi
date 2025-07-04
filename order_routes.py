@@ -53,7 +53,7 @@ async def add_item_to_order(order_id: int,
         raise HTTPException(status_code=403, detail="You do not have permission to add items to this order")
     order_item = OrderItem(order_Item_Schema.quantity, order_Item_Schema.flavor, order_Item_Schema.size, order_Item_Schema.unity_price, order_id)
 
-    order.calculate_total_price()
     session.add(order_item)
+    order.calculate_total_price()
     session.commit()
     return {"message": "Item added to order successfully", "item id:": order_item.id, "order price:": order.price}
