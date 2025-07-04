@@ -49,18 +49,27 @@ class Order(Base):
         self.status = status
         self.price = price
 
+    def calculate_total_price(self):
+        """Calculate the total price of the order based on its items."""
+        self.price = 10  # Placeholder for total price calculation logic
+        # Assuming items is a list of OrderItem objects, you can calculate the total price like this:
+        # self.price = sum(item.quantity * item.unity_price for item in items)
+        return self.price
+
 class OrderItem(Base):
     __tablename__ = 'order_items'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    order_id = Column(ForeignKey('orders.id'), nullable=False)
-    product_id = Column(Integer, nullable=False)
     quantity = Column(Integer, nullable=False)
-    price = Column(Float, nullable=False)
+    flavor = Column(String, nullable=False)  # Assuming flavor is a string
+    size = Column(String, nullable=False)  # Assuming size is a string
+    unity_price = Column(Float, nullable=False)
+    order_id = Column(ForeignKey('orders.id'), nullable=False)
 
     # Constructor to initialize the order item
-    def __init__(self, order_id, product_id, quantity, price):
-        self.order_id = order_id
-        self.product_id = product_id
+    def __init__(self, quantity, flavor, size, unity_price, order_id):
         self.quantity = quantity
-        self.price = price
+        self.flavor = flavor
+        self.size = size
+        self.unity_price = unity_price
+        self.order_id = order_id
